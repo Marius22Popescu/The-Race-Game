@@ -10,7 +10,7 @@ crash_sound = pygame.mixer.Sound("crash.wav")
 pygame.mixer.music.load("car.wav")
 
 #declaring variable
-display_width = 800
+display_width = 750
 display_height = 600
 #define collors with RGB (Red Green Blue)
 black = (0,0,0) #no color, no light on a black screan
@@ -21,8 +21,8 @@ bright_red = (255,0,0)
 bright_green = (0,255,0)
 block_color = (53, 115, 255)
 
-car_width = 50
-car_height = 100
+car_width = 40
+car_height = 80
 #initiate vindow
 gameDisplay = pygame.display.set_mode((display_width,display_height))
 #initiate title
@@ -31,7 +31,9 @@ pygame.display.set_caption('The Race')
 clock = pygame.time.Clock()
 
 #create the car - use GIMP Colors -> Colors to Alpha to get over it white
-carImg = pygame.image.load('racecar.png')
+carImg = pygame.image.load('car.png')
+background = pygame.image.load('background.png')
+street = pygame.image.load('street.png')
 
 #set the icon of the game to be carImg
 gameIcon = pygame.image.load('racecarIcon.png')
@@ -41,8 +43,8 @@ pause = False # define and set pause to false
 
 #this method will count how many object was dodged (avoided) and will ad points
 def things_dodged(count):
-    font = pygame.font.SysFont(None, 25)
-    text = font.render("Dodged: "+str(count), True, black)
+    font = pygame.font.SysFont(None, 45)
+    text = font.render("Dodged: "+str(count), True, red)
     gameDisplay.blit(text,(0,0))
     
 #define a function to drow objects (obstacles) 
@@ -62,7 +64,7 @@ def text_objects(text, font):
 def message_display(text):
     largeText = pygame.font.Font('freesansbold.ttf',60) #(font type, font size)
     TextSurf, TextRect = text_objects(text, largeText)   #set the tesx and the font and type of text inside the rectangle where will be the text 
-    TextRect.center = ((display_width/2) , (display_height/2)) #set this mesage in the center of screen
+    TextRect.center = ((display_width/2) , (200)) #set this mesage in the center of screen
     gameDisplay.blit(TextSurf, TextRect) # blit() will draw the text on the screen
     
 #define crash method
@@ -112,12 +114,14 @@ def game_intro():
             if event.type == pygame.QUIT:
                 quitgame()
 
-        gameDisplay.fill(white)
+
+        # display the background
+        gameDisplay.blit(background, (0,0))
         # display the message on the screen
         message_display('The Race')
         # Call button method
-        button("GO!", 150, 450, 100, 50, green, bright_green, game_loop)
-        button("Quit", 550, 450, 100, 50, red, bright_red, quitgame)
+        button("GO!", 150, 500, 100, 50, green, bright_green, game_loop)
+        button("Quit", 550, 500, 100, 50, red, bright_red, quitgame)
        
         pygame.display.update()
         clock.tick(15)
@@ -182,9 +186,9 @@ def game_loop():
             #if a key is presed  
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_LEFT:
-                    x_change = -5 #decrease the x by 5
+                    x_change = -10 #decrease the x by 5
                 if event.key == pygame.K_RIGHT:
-                    x_change = 5 # increase x by 5
+                    x_change = 10 # increase x by 5
                 if event.key == pygame.K_p: # if 'p' is pressed then pause the game
                     pause = True
                     paused()  # call the paused method
@@ -197,7 +201,7 @@ def game_loop():
         #change the value of x
         x += x_change
         #change the background
-        gameDisplay.fill(white)
+        gameDisplay.blit(street, (0,0))
         # things(thingx, thingy, thingw, thingh, color)
         things(thing_startx, thing_starty, thing_width, thing_height, block_color)
         thing_starty += thing_speed #each time vhen we run the loop will add 7 pixels to the y start coordinates
@@ -205,10 +209,13 @@ def game_loop():
         #show yhe car
         car(x,y)
         things_dodged(dodged)
+
         
         #if the car chrash in the wall left or right game exit
         if x > display_width - car_width or x < 0:
             crash()
+
+            
         # if a thing(square) leaved the screen
         if thing_starty > display_height: 
             thing_starty = 0 - thing_height #reset the y to the top of the screen
